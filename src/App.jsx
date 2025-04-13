@@ -1,5 +1,6 @@
 import './App.css'
 import {User, MessageCircle, X, Heart} from 'lucide-react'
+import React, {useState} from 'react'
 
 const ProfileSelector = () => {
   return (
@@ -54,15 +55,26 @@ const MatchesList = () => {
 }
 
 function App() {
+
+  const [currentState, setCurrentScreen] = useState('profile');
+
+  const renderScreen = () => {
+    switch(currentState) {
+      case 'profile':
+        return <ProfileSelector />;
+      case 'matches':
+        return <MatchesList />;
+    }
+  }
+
   return (
     <>
     <div className='max-w-md mx-auto'>
       <nav className='flex justify-between'>
-        <User/>
-        <MessageCircle />
+        <User onClick = {() => {setCurrentScreen('profile')}}/>
+        <MessageCircle onClick = {() => setCurrentScreen('matches')}/>
       </nav>
-      <ProfileSelector/>
-      {/* <MatchesList /> */}
+      {renderScreen()}
     </div>
     </>
   )
