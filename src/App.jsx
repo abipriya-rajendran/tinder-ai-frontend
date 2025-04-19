@@ -33,6 +33,31 @@ const fetchMatches = async () => {
   return response.json();
 }
 
+const fetchConversation = async (conversationId) => {
+  const response = await fetch('http://localhost:8080/conversations/' + conversationId);
+  if (!response.ok) {
+    throw new Error('Failed to fetch conversation');
+  }
+  return response.json();
+}
+
+const sendMessage = async (message, conversationId) => {
+  const response = await fetch('http://localhost:8080/conversations/' + conversationId, 
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'Application/json'
+      },
+      body: JSON.stringify({ messageText: message, authorId : 1 })
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to submit message');
+  }
+  return response.json;
+}
+
 const ProfileSelector = ({ profile, onSwipe }) => {
   return (profile ?  
     (<div className='rounded-lg overflow-hidden bg-white shadow-lg'>
@@ -64,11 +89,11 @@ const MatchesList = ({matches, onSelectMatch }) => {
     <div className='rounded-large shadow-lg p-4'>
       <h2 className='text-2xl font-bold mb-4'>Matches</h2>
         <ul>
-        {matches.map(match => (
-          <li key={match.profile.id} className='mb-2'>
+        {matches.map((match, index) => (
+          <li key={index} className='mb-2'>
             <button 
               className='w-full hover:bg-gray-100 rounded flex item-center'
-              onClick={onSelectMatch}>
+              onClick={() => onSelectMatch(match.profile, match.conversationId)}>
               <img src={'http://localhost:8080/images/' + match.profile.imageUrl} className='w-16 h-16 rounded-full mr-3 object-cover' />
               <span>
                 <h3 className='font-bold'>{match.profile.firstName} {match.profile.lastName}</h3>
@@ -82,33 +107,25 @@ const MatchesList = ({matches, onSelectMatch }) => {
   );
 }
 
-const ChatScreen = () => {
+const ChatScreen = ({currentMatch, conversation, refreshChatState}) => {
   const [input, setInput] = useState('');
 
-  const handleSend = () => {
+  const handleSend = async (input) => {
     if (input.trim()) {
-      console.log(input);
+      await sendMessage(input, conversation.id);
       setInput('');
+      refreshChatState();
     }
   }
 
-  return (
+  return currentMatch ? (
     <div className='rounded-large shadow-lg p-4'>
-      <h2 className='text-2xl font-bold mb-4'>Chat with Foo Bar</h2>
+      <h2 className='text-2xl font-bold mb-4'>Chat with {currentMatch.firstName} {currentMatch.lastName}</h2>
       <div className='h-[50vh] border rounded overflow-y-auto mb-4 p-2'>
         {
-          [
-            "Hi",
-            "What's up?",
-            "What's up?",
-            "What's up?",
-            "What's up?",
-            "What's up?",
-            "What's up?",
-            "What's up?"
-          ].map((message, index) => (
+          conversation.messages.map((message, index) => (
             <div key={index}>
-              <div className='mb-4 p-2 rounded bg-gray-100'>{message}</div>
+              <div className='mb-4 p-2 rounded bg-gray-100'>{message.messageText}</div>
             </div>)
           )
         }
@@ -123,11 +140,11 @@ const ChatScreen = () => {
         />
         <button 
           className='bg-blue-500 text-white rounded p-2'
-          onClick={() => handleSend()}  
+          onClick={() => handleSend(input)}
         >Send</button>
       </div>
     </div>
-  )
+  ) : <div>Loading...</div>
 }
 
 function App() {
@@ -150,15 +167,6 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    loadRandomProfile();
-    loadMatches();
-  }, []);
-
-  const [currentState, setCurrentScreen] = useState('profile');
-  const [currentProfile, setCurrentProfile] = useState(null);
-  const [matches, setMatches] = useState([]);
-
   const onSwipe = async (direction, profileId) => {
     loadRandomProfile();
     if (direction === 'right') {
@@ -167,14 +175,38 @@ function App() {
     }
   }
 
+  const onSelectMatch = async (profile, conversationId) => {
+    const conversation = await fetchConversation(conversationId);
+    setCurrentChatMetaData({ match: profile, conversation });
+    setCurrentScreen('chat');
+  }
+
+  const refreshChatState = async () => {
+    const conversation = await fetchConversation(currentChatMetaData.conversation.id);
+    setCurrentChatMetaData({ match: currentChatMetaData.match, conversation });
+  }
+
+  useEffect(() => {
+    loadRandomProfile();
+    loadMatches();
+  }, []);
+
+  const [currentState, setCurrentScreen] = useState('profile');
+  const [currentProfile, setCurrentProfile] = useState(null);
+  const [matches, setMatches] = useState([]);
+  const [currentChatMetaData, setCurrentChatMetaData] = useState({match: [], conversation: []});
+
   const renderScreen = () => {
     switch(currentState) {
       case 'profile':
         return <ProfileSelector profile={currentProfile} onSwipe={onSwipe} />;
       case 'matches':
-        return <MatchesList matches={matches} onSelectMatch={() => setCurrentScreen('chat')} />;
+        return <MatchesList matches={matches} onSelectMatch={onSelectMatch} />;
       case 'chat':
-        return <ChatScreen />;
+        return <ChatScreen 
+          currentMatch={currentChatMetaData.match} 
+          conversation={currentChatMetaData.conversation} 
+          refreshChatState={refreshChatState} />;
     }
   }
 
