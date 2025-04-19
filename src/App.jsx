@@ -48,7 +48,7 @@ const sendMessage = async (message, conversationId) => {
       headers: {
         'Content-Type': 'Application/json'
       },
-      body: JSON.stringify({ messageText: message, authorId : 1 })
+      body: JSON.stringify({ messageText: message, authorId : 'user' })
     }
   );
 
@@ -124,8 +124,22 @@ const ChatScreen = ({currentMatch, conversation, refreshChatState}) => {
       <div className='h-[50vh] border rounded overflow-y-auto mb-4 p-2'>
         {
           conversation.messages.map((message, index) => (
-            <div key={index}>
-              <div className='mb-4 p-2 rounded bg-gray-100'>{message.messageText}</div>
+            <div key={index} className={`flex ${message.authorId == 'user'} ? justify-end : 'justify-start'`}>
+              <div className={`flex items-end ${message.authorId === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
+              {message.authorId === 'user' ? (<User size={15} />) : 
+              (<img
+                src={`http://localhost:8080/images/${currentMatch.imageUrl}`}
+                className="w-11 h-11 rounded-full"
+              />)}
+              <div
+                className={`max-w-xs px-4 py-2 rounded-2xl ${
+                  message.authorId === 'user'
+                    ? 'bg-blue-500 text-white ml-2'
+                    : 'bg-gray-200 text-gray-800 mr-2'
+                }`}
+              >{message.messageText}
+              </div>
+              </div>
             </div>)
           )
         }
