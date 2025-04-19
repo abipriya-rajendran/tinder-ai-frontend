@@ -1,5 +1,5 @@
 import './App.css'
-import {User, MessageCircle, X, Heart} from 'lucide-react'
+import {User, MessageCircle, X, Heart, Send} from 'lucide-react'
 import React, {useState, useEffect} from 'react'
 
 const fetchRandomProfile = async () => {
@@ -119,12 +119,12 @@ const ChatScreen = ({currentMatch, conversation, refreshChatState}) => {
   }
 
   return currentMatch ? (
-    <div className='rounded-large shadow-lg p-4'>
+    <div className='rounded-lg shadow-lg p-4'>
       <h2 className='text-2xl font-bold mb-4'>Chat with {currentMatch.firstName} {currentMatch.lastName}</h2>
-      <div className='h-[50vh] border rounded overflow-y-auto mb-4 p-2'>
+      <div className='h-[50vh] border rounded-lg overflow-y-auto mb-6 p-4 bg-gray-50'>
         {
           conversation.messages.map((message, index) => (
-            <div key={index} className={`flex ${message.authorId == 'user'} ? justify-end : 'justify-start'`}>
+            <div key={index} className={`flex ${message.authorId == 'user'} ? justify-end : 'justify-start' mb-4`}>
               <div className={`flex items-end ${message.authorId === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
               {message.authorId === 'user' ? (<User size={15} />) : 
               (<img
@@ -149,13 +149,15 @@ const ChatScreen = ({currentMatch, conversation, refreshChatState}) => {
           type='text'
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className='border flex-1 rounded p-2 mr-2'
+          className='flex-1 border-2 border-gray-300 rounded-full py-2 px-4 mr-2 focus:outline-none focus:border-blue-500'
           placeholder='Type a message...' 
         />
         <button 
-          className='bg-blue-500 text-white rounded p-2'
+          className='bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 transition-colors duration-200'
           onClick={() => handleSend(input)}
-        >Send</button>
+        >
+          <Send size={24} />
+        </button>
       </div>
     </div>
   ) : <div>Loading...</div>
