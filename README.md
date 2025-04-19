@@ -13,18 +13,26 @@ If you are developing a production application, we recommend using TypeScript an
 
 ----------------
 
-**Backend component**: [tinder-ai-backend](https://github.com/abipriya-rajendran/tinder-ai-backend)
 
+# 🔥 Tinder Clone with AI Chat
 
-**Profile selector screen**
+This is a simple Tinder clone built with a swipe-based UI, integrated with AI-generated conversations using the [Ollama](https://ollama.ai/) runtime and a [LLaMA](https://llama.meta.com/) model. MongoDB is used as the database to store user profiles and chat histories.
+
+### 🧠 Backend component
+[tinder-ai-backend](https://github.com/abipriya-rajendran/tinder-ai-backend)
+
+.....
+
+## 🖼️ Screenshots
+
+### 🔄 Profile Selector Screen
 <img width="1467" alt="image" src="https://github.com/user-attachments/assets/0b8860c8-dea1-4f0e-afff-28eaa8d980eb" />
 
-**Profile matches screen**
+### 💘 Profile Matches Screen
 <img width="1469" alt="image" src="https://github.com/user-attachments/assets/7c6e84fa-83b5-4d8d-8b53-9792f857e918" />
 
-**Chat window**
+### 💬 Chat Window
 <img width="1470" alt="image" src="https://github.com/user-attachments/assets/c4e66ccb-843b-4103-95ef-399d1c8b92a3" />
 
-
-**Source:**
+## 🎥 Source
 https://www.youtube.com/watch?v=k3fSQpz2Esg
